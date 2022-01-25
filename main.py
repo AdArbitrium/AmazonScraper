@@ -13,10 +13,14 @@ def get_searched_item(search_term):
     return template.format(search_term)
 
 
-def get_data(url):
+def get_soup(url):
     html= requests.get(url)
     soup= BeautifulSoup(html.text, headers)
     return(soup)
+
+def get_item_list(soup):
+    items = soup.find_all('div',{'class':'sg-col sg-col-4-of-12 sg-col-8-of-16 sg-col-12-of-20'})
+    print(items[0])
 
 def get_next_page(soup):
     page = soup.find('ul', {'class': 'a-pagination'})
@@ -38,10 +42,19 @@ def get_marked_down_items(soup):
             print('Original Price'+price.text.strip())
 
         except:
-            print('this shit aint on sell')
+            print('this shit aint on sale')
             
         finally:
             print('done')
+
+def get_discounted_items(soup):
+    items = soup.find_all('span', {'class': 's-coupon-unclipped'})
+    print(items)
+    for item in items:
+        
+        coupon_amount = item.find('span',{'class':'a-size-base s-highlighted-text-padding aok-inline-block s-coupon-highlight-color'})
+        print(coupon_amount.text)
+
 
 
 url = 'https://www.amazon.com/s?k=gaming+mouse&crid=31HXHGEPP7U9C&sprefix=gaming+mous%2Caps%2C157&ref=nb_sb_noss_2'
@@ -57,3 +70,9 @@ def searched_item_check(soup, searched_item):
         if searched_item.lower() in item_title.lower():
             print(item_title)
             print('this is a ' + searched_item)
+
+
+items = soup.find_all('div',{'class':'sg-col sg-col-4-of-12 sg-col-8-of-16 sg-col-12-of-20'})
+for item in items:
+    item_title = item.find('span',{'class','a-size-medium a-color-base a-text-normal'})
+    print(item_title.text)
